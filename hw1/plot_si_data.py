@@ -1,6 +1,5 @@
 import re
 import time
-#import numpy
 import matplotlib.pyplot as pyplot
 
 def parsefile(inFile=r"silicon_data.txt",debug=0):
