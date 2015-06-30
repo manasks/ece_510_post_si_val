@@ -16,6 +16,8 @@ def parsefile(inFile=r"silicon_data.txt",debug=0):
                 pyplot.scatter(voltage,frequency)
                 pyplot.draw()
                 #time.sleep(0.1)
+        pyplot.ylabel("frequency (MHz)")
+        pyplot.xlabel("voltage (V)")
         pyplot.show()
 		
 if __name__ == '__main__':
