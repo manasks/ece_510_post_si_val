@@ -162,7 +162,7 @@ class Tap(Tap_GPIO):
         :returns: int - TDO data
 
         """
-        rslt=None
+        rslt=0
         for i in range(0,length):
             rslt=str(rslt)+str(Tap_GPIO.read_tdo_data(self))
         
