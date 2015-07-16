@@ -29,19 +29,16 @@ class Tap(Tap_GPIO):
         :type tdi: int (0/1)
         """
         
-        pass
-       
     def reset(self):
         """ set TAP state to Test_Logic_Reset """
         Tap_GPIO.set_io_data(self,tms=1,tdi=0,tck=0)
         Tap_GPIO.delay(0.01)
         # assert TMS for 5 TCKs in a row
-        for i in range(1,5):
+        for i in range(0,5):
             Tap_GPIO.set_io_data(self,tms=1,tdi=0,tck=1)
             Tap_GPIO.delay(0.01)
             Tap_GPIO.set_io_data(self,tms=1,tdi=0,tck=0)
             Tap_GPIO.delay(0.01)
-        pass
 
     def reset2ShiftIR(self):
         """ shift TAP state from reset to shiftIR """
@@ -75,8 +72,6 @@ class Tap(Tap_GPIO):
         Tap_GPIO.set_io_data(self,tms=0,tdi=0,tck=0)
         Tap_GPIO.delay(0.01)
         
-        pass 
-
     def exit1IR2ShiftDR(self):
         """ shift TAP state from exit1IR to shiftDR """
         #Exit1-IR to Update-IR
@@ -103,8 +98,6 @@ class Tap(Tap_GPIO):
         Tap_GPIO.set_io_data(self,tms=0,tdi=0,tck=0)
         Tap_GPIO.delay(0.01)
         
-        pass
-
     def exit1DR2ShiftIR(self):
         """ shift TAP state from exit1DR to shiftIR """
         #Exit1-DR to Update-DR
@@ -136,8 +129,6 @@ class Tap(Tap_GPIO):
         Tap_GPIO.delay(0.01)
         Tap_GPIO.set_io_data(self,tms=0,tdi=0,tck=0)
         Tap_GPIO.delay(0.01)
-        
-        pass
 
     def shiftInData(self, tdi_str):    
         """ shift in IR/DR data
@@ -146,13 +137,16 @@ class Tap(Tap_GPIO):
         :type tdo_str: str
 
         """
-        for i in tdi_str:
-            Tap_GPIO.set_io_data(self,tms=0,tdi=int(i),tck=1)
+        for i in range(len(tdi_str)-1):
+            Tap_GPIO.set_io_data(self,tms=0,tdi=int(tdi_str[i]),tck=1)
             Tap_GPIO.delay(0.01)
-            Tap_GPIO.set_io_data(self,tms=0,tdi=int(i),tck=0)
+            Tap_GPIO.set_io_data(self,tms=0,tdi=int(tdi_str[i]),tck=0)
             Tap_GPIO.delay(0.01)
-        
-        pass
+        Tap_GPIO.set_io_data(self,tms=1,tdi=int(tdi_str[5]),tck=1)
+        Tap_GPIO.delay(0.01)
+        Tap_GPIO.set_io_data(self,tms=1,tdi=int(tdi_str[5]),tck=0)
+        Tap_GPIO.delay(0.01)
+
 
     def shiftOutData(self, length):
         """ get IR/DR data
@@ -163,9 +157,17 @@ class Tap(Tap_GPIO):
 
         """
         rslt=0
-        for i in range(0,length):
-            rslt=str(rslt)+str(Tap_GPIO.read_tdo_data(self))
-        
+        for i in range(0,length-1):
+            Tap_GPIO.set_io_data(self,tms=0,tdi=0,tck=1)    
+            rslt=rslt|(Tap_GPIO.read_tdo_data(self) << i)
+            Tap_GPIO.delay(0.01)
+            Tap_GPIO.set_io_data(self,tms=0,tdi=0,tck=0)    
+            Tap_GPIO.delay(0.01)
+        rslt=rslt|(Tap_GPIO.read_tdo_data(self) << 31)
+        Tap_GPIO.set_io_data(self,tms=1,tdi=0,tck=1)    
+        Tap_GPIO.delay(0.01)
+        Tap_GPIO.set_io_data(self,tms=1,tdi=0,tck=0)    
+        Tap_GPIO.delay(0.01)
         return rslt
 
     def getChainLength(self):
