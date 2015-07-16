@@ -1,6 +1,12 @@
-0xc88a
-0xc88b66
-0xd08b
-0xf28b
-0x5452bf
-0x545207c7
+0xc88a		mov8 bit reg to 8 bit reg # mov %al, %cl
+0xc88b66	mov16 bit reg to 16 bit reg # mov %ax, %cx
+0xd08b		mov register to register # mov %eax, %edx
+0xf28b		mov register to register # mov %edx, %esi
+0x5452bf	mov immediate to edi # mov $0x5452, %edi
+0x545207c7	mov immediate 32 to offset 0 of 32m # mov $0x5452, (%rdi)
+
+
+
+
+
+
