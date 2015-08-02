@@ -1,0 +1,172 @@
+# Base code for project_part2 plus instructions
+#
+#
+# Summary
+# Practice debugging a failure to start... current version fails, why?
+#
+# In this project you will be adding more instructions
+# This project you will actually execute and debug your code you are executing!
+# At the end of this project you should be able to generate, single step through 
+# and execute your code from start to finish..
+# Should also be able to run just by letting it run from the command line...
+# Get generate and execute 25 instructions (mixture of reg to reg , imm to reg,
+# reg to memory, and memory to reg), then return to the executeit routine..
+# Set a base address in one or more registers and use that register(s) as a pointer
+# to memory.
+#
+# Start off debugging where it is failing and note why?
+# 
+# use gdb to run and debug the problem..
+# NOTE:  hint, use bt command for backtracing where it faults, examine the instruction
+# it fails on... do you understand why?
+# Please document your debug steps and findings
+#
+# you will shortly fix this problem with your new additions..
+#
+#
+# Requirements
+#
+# Merge in your code from project_part1
+#
+# add the following new instruction build routines
+#     push register and pop register routine (build_push_reg, build_pop_reg)
+#     pusha (only valid for x86 case)
+#     enter instruction with encode using the imm, 0 form, imm should be 2048
+#     leave instruction (no parameters)
+#     ret   (no parameters)
+#     
+#    add build_mov_memory_to_register and include a displacement of 0, 8, and 32 bits
+#
+#    add a displacement to your previous mov reg to memory if you don't have one already
+#    (support 0, 8 and 32 bit displacement)
+#     static inline volatile char *build_mov_register_to_memory(short mov_size, int src_reg, int dest_reg,long displacement,  volatile char *tgt_addr)
+#
+#     
+# 
+# add the following new C routines to encodeit.c
+#
+# static inline volatile char *add_headeri(volatile char *tgt_addr)
+# static inline volatile char *add_endi(volatile char *tgt_addr)
+# 
+# 
+# in add_headeri function
+#    make call to create "enter $2048, 0" to create a stack frame
+#
+# in add_endi function
+#    make call to create "leave" instruction to release stack frame setup by enter
+#    make call to create "ret" instruction this will get you back to the calleer
+# 
+#
+# for these do the following:
+# 
+# call add_headeri from build_instructions first thing.. this adds a header to your code
+#      ...
+#      generate instructions
+#      ...
+# call add_endi as the last function in your build_instructions routine adds finish up 
+#      code to allow you to return to the calling routine
+# 
+#
+# in encodeit.c you will want to  malloc call with a 
+# 
+# note the push and pop register routines are added 
+# 
+# HINTS: for next project, to avoid getting into trouble.
+#
+# since we haven't discussed the x86_64, 64bit REx prefix, I'm providing 
+# some hints on this front to make it easier..AS WELL as some code...
+# included a wimpy push and pop routine that can also handle new 64 bit registers
+#
+# 
+# if you have a 64 bit (x86_64) enabled platform running linux, 
+# then you will need to do the following for
+# passing the right address from immmediate to reg routine..
+#
+# to pre-fix for 64 bit immediate move instruction, 
+# (this only handles 8 byte moves by the way...) see the following code...
+#
+# // this will give you an idea of how to handle the 64 bit move immediate case
+# // this will need to prefix your opcode
+# //
+# 	if (mov_size == 8) {
+#		// this is a quick hack for REX_W prefix
+#		// need to go back and fix this for general case.
+#
+#		(*(char *) tgt_addr)=(REX_PREFIX | REX_W);
+#		tgt_addr += BYTE1_OFF;
+#	}
+#
+#
+# then also need to the immediate to reg would look something like this..
+#
+#
+#	case 8:  // this requires rex.w to be set prior to this..
+#		 (*(char *) tgt_addr) = (0xb8 + dest_reg);
+#		 tgt_addr += BYTE1_OFF;
+#		 (*(long *)tgt_addr) = imm;
+#		 tgt_addr +=8;
+#		 break;
+#
+# 
+#  Hint 2:
+#         what about architecture callee saved registers........
+#         hmm, should be saving and restoring registers before we start execution our own#         code?  Ever hear of ABI (Application Binary Interface)... Also good practice to
+#         make sure you don't destroy any needed context for the return path...
+#
+#  Hint 3:  
+#         What address do we use do for loads and stores, and how do establish the data
+#         pointer register from the code you built?  Use the pointer to mdptr in which 
+#         call?
+#
+#         
+#  
+#
+# Building the code...
+# In order to build the code, same as before
+#
+
+make
+
+# can run it, or debug it..
+
+gdb encodeit
+
+# hint for easier debug of instructions stepping in gdb
+# display instructions related instructions related to current instruction pointer...
+#
+display/i $pc
+
+# can type stepi
+
+# if you want to clean out the obj, exec
+
+make clean
+
+
+# Debugging
+
+# if debug it, if you run up to encodeit.c:27
+# you can then dump out the code you generated by using x/10ai in gdb 
+# example
+
+gdb encodeit
+
+# can set a break point at main or line 27..
+# after the generation stage (build_instruction has run)
+# then the buffer should be populated and you can dump it out.
+
+Breakpoint 3, main (argc=1, argv=0x7fff5fbff920) at encodeit.c:27
+27		fprintf(stderr,"generation program complete, instructions generated: %d\n",ibuilt);
+(gdb) x/10ai mptr
+0x100800000:	mov    %ecx,%ebx
+0x100800002:	mov    %edx,%edi
+...
+
+#
+# can now also set a break point at executeit... This is important.
+# can use the gdb display command and step into your generated code...
+#
+# should be able to walk through and execute your code from start to finish..
+# both from the debugger and from just letting it run from the command line...
+# 
+#
