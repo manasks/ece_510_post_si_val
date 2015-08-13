@@ -43,7 +43,7 @@ main(int argc, char *argv[])
 		PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_SHARED,
 		0, 0
 		);
-	data_addr=(long)mdptr;  			// base addr for data access 
+	data_addr=(long)mdptr;  
 		
 	if(mdptr == MAP_FAILED) { 
 		printf("data mptr allocation failed\n"); 
@@ -80,10 +80,11 @@ main(int argc, char *argv[])
 	
 	ibuilt=build_instructions(inst_count,seed);  	// build instructions
 
-	/* Execute the instructions */
+	/* ok now that I built the critters, time to execute them */
 
 	start_test=(funct_t) mptr;
 	executeit(start_test);
+
 
 	fprintf(stderr,"generation program complete, %d instructions generated, and executed\n",ibuilt);
 
@@ -124,7 +125,7 @@ int build_instructions(int inst_count,int seed) {
 	next_ptr=build_mov_immediate_to_register(ISZ_8,1, data_addr ,REG_EAX,0, next_ptr);				
 	
 	
-	for (i=0; i<inst_count; i++)
+	for (  i=0; i<inst_count; i++)
 	{
 		int inst_type,inst_size;
 		int REG1,REG2; 
@@ -132,10 +133,9 @@ int build_instructions(int inst_count,int seed) {
 		short immediate;
 		short  mem_displacement;
 		
-		
+		inst_type= rand_generator(1,4);
 		
 		// Generate the randomized inputs within the specified range 
-		inst_type= rand_generator(1,4);
 		REG1= rand_generator(1,7);					// Generate random registers 
 		REG2= rand_generator(1,7);
 		x86_64f= rand_generator(0,1);				// indicates whether to use r8-r15 registers 
@@ -143,7 +143,7 @@ int build_instructions(int inst_count,int seed) {
 		immediate=rand_generator(20,500);			// generates random immediate value within 20 - 100
 		addr32= rand_generator(0,1);				// indicates whether to use 32 bit memory address or 64 bits
 		disp= rand_generator (0,2); 				// specifies DISP_0,DISP_32 or DISP_32
-		mem_displacement= rand_generator (10,100);   // generates random memory displacement value within 10- 100
+		mem_displacement= rand_generator (10,200);   // generates random memory displacement value within 0- 20
 		
 		/* Constrain the randomized inputs */
 		
@@ -158,14 +158,11 @@ int build_instructions(int inst_count,int seed) {
 		disp=DISP_32; }
 		
 		// Map the instruction size generated to valid instruction size
-		if (inst_size==3 ) {
-			inst_size=8; }
-		if (inst_size==5 ) {
-			inst_size=8; }
-		if (inst_size==6 ) {
-			inst_size=1; }			
-		if (inst_size==7 ) {
+		if (inst_size==3 || 5 ) {
 			inst_size=4; }
+			
+		if (inst_size==6 || 7 ) {
+			inst_size=8; }
 		
 		// set the memory addr type depending on the random no generated
 						
@@ -188,10 +185,6 @@ int build_instructions(int inst_count,int seed) {
 		if (REG2==5 || 4) {
 			REG2= 3; }
 		
-		// for reg to mem and mem to reg instructions set mem address as 64 bits (RAX) 
-		if (inst_type== 3 || 4) {
-			addr32=ADDR_64;
-		}
 		
 		switch(inst_type)
 		{
@@ -208,12 +201,15 @@ int build_instructions(int inst_count,int seed) {
 					num_inst++;
 					break;
 			case 4: // Move memory to register
+					printf("mem_disp=%d\n",mem_displacement);
 					next_ptr=build_mov_memory_to_register(inst_size,addr32, REG1 ,REG_EAX,disp,mem_displacement, next_ptr);
 					num_inst++;
 					break;
 	}	
 	
 }
+
+
 
 // Restore the saved registers
 	next_ptr= build_pop_reg(REG_R15,1,next_ptr);
@@ -249,18 +245,7 @@ int executeit(funct_t start_addr)
 	return(0);
 }
 
-
-/*
- * Function: rand_generator
- * 
- * Description:
- * Generates a random number within the specified range 
- *
- * INTPUTs:  
- * int min_n               : Lower limit for the range 
- * int max_n			   : Upper limit for the range
- * Returns:  random number within the specified range 
- */  
+// Generate a random number within the specified range 
 
 int rand_generator( int min_n,int max_n)
 {

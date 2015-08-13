@@ -1,0 +1,84 @@
+ Assigned child process T3778 to CPU_1
+Thread 1:Build instruction MOV Immediate to reg:Inst_size=2	 Immediate value =203	 dest_reg=1		Thread 1:		next ptr is now 0x7fe71600e01f
+Thread 1:Build instruction XCHG :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 1:		next ptr is now 0x7fe71600e021
+Thread 1:Build instruction SFENCE 		Thread 1:		next ptr is now 0x7fe71600e024
+Thread 1:Build instruction XCHG :Inst_size=1	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 1:		next ptr is now 0x7fe71600e026
+Thread 1:Build instruction MFENCE		Thread 1:		next ptr is now 0x7fe71600e029
+Thread 1:Build instruction MOV Register to Memory :Inst_size=8	 Src_reg =1	 mem_reg=0	Displacement=81 	Thread 1:		next ptr is now 0x7fe71600e030
+Thread 1:Build instruction MFENCE		Thread 1:		next ptr is now 0x7fe71600e033
+Thread 1: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 1:		next ptr is now 0x7fe71600e035
+Thread 1:Build instruction LFENCE 		Thread 1:		next ptr is now 0x7fe71600e038
+Thread 1:Build instruction MFENCE		Thread 1:		next ptr is now 0x7fe71600e03b
+Thread 1: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 1:		next ptr is now 0x7fe71600e03d
+Thread 1:Build instruction LFENCE 		Thread 1:		next ptr is now 0x7fe71600e040
+Thread 1:Build instruction XADD :Inst_size=2	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 1:		next ptr is now 0x7fe71600e045
+Thread 1:Build instruction MOV Memory to Register :Inst_size=8	 mem_reg =1	 dest_reg=0	Displacement=84 	Thread 1:		next ptr is now 0x7fe71600e04c
+Thread 1:Build instruction MOV Immediate to reg:Inst_size=8	 Immediate value =492	 dest_reg=1		Thread 1:		next ptr is now 0x7fe71600e053
+Thread 1:Build instruction XADD :Inst_size=8	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 1:		next ptr is now 0x7fe71600e058
+Thread 1:Build instruction MOV Register to Memory :Inst_size=2	 Src_reg =1	 mem_reg=0	Displacement=64 	Thread 1:		next ptr is now 0x7fe71600e05c
+Thread 1:Build instruction MFENCE		Thread 1:		next ptr is now 0x7fe71600e05f
+Thread 1:Build instruction XADD :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 1:		next ptr is now 0x7fe71600e063
+Thread 1:Build instruction SFENCE 		Thread 1:		next ptr is now 0x7fe71600e066
+ Assigned child process T3779 to CPU_2
+Thread 2:Build instruction MOV Immediate to reg:Inst_size=2	 Immediate value =203	 dest_reg=1		Thread 2:		next ptr is now 0x7fe71601101f
+Thread 2:Build instruction XCHG :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 2:		next ptr is now 0x7fe716011021
+Thread 2:Build instruction SFENCE 		Thread 2:		next ptr is now 0x7fe716011024
+Thread 2:Build instruction XCHG :Inst_size=1	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 2:		next ptr is now 0x7fe716011026
+Thread 2:Build instruction MFENCE		Thread 2:		next ptr is now 0x7fe716011029
+Thread 2:Build instruction MOV Register to Memory :Inst_size=8	 Src_reg =1	 mem_reg=0	Displacement=81 	Thread 2:		next ptr is now 0x7fe716011030
+Thread 2:Build instruction MFENCE		Thread 2:		next ptr is now 0x7fe716011033
+Thread 2: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 2:		next ptr is now 0x7fe716011035
+Thread 2:Build instruction LFENCE 		Thread 2:		next ptr is now 0x7fe716011038
+Thread 2:Build instruction MFENCE		Thread 2:		next ptr is now 0x7fe71601103b
+Thread 2: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 2:		next ptr is now 0x7fe71601103d
+Thread 2:Build instruction LFENCE 		Thread 2:		next ptr is now 0x7fe716011040
+Thread 2:Build instruction XADD :Inst_size=2	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 2:		next ptr is now 0x7fe716011045
+Thread 2:Build instruction MOV Memory to Register :Inst_size=8	 mem_reg =1	 dest_reg=0	Displacement=84 	Thread 2:		next ptr is now 0x7fe71601104c
+Thread 2:Build instruction MOV Immediate to reg:Inst_size=8	 Immediate value =492	 dest_reg=1		Thread 2:		next ptr is now 0x7fe716011053
+Thread 2:Build instruction XADD :Inst_size=8	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 2:		next ptr is now 0x7fe716011058
+Thread 2:Build instruction MOV Register to Memory :Inst_size=2	 Src_reg =1	 mem_reg=0	Displacement=64 	Thread 2:		next ptr is now 0x7fe71601105c
+Thread 2:Build instruction MFENCE		Thread 2:		next ptr is now 0x7fe71601105f
+Thread 2:Build instruction XADD :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 2:		next ptr is now 0x7fe716011063
+Thread 2:Build instruction SFENCE 		Thread 2:		next ptr is now 0x7fe716011066
+ Assigned child process T3777 to CPU_0
+Thread 0:Build instruction MOV Immediate to reg:Inst_size=2	 Immediate value =203	 dest_reg=1		Thread 0:		next ptr is now 0x7fe71600b01f
+Thread 0:Build instruction XCHG :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 0:		next ptr is now 0x7fe71600b021
+Thread 0:Build instruction SFENCE 		Thread 0:		next ptr is now 0x7fe71600b024
+Thread 0:Build instruction XCHG :Inst_size=1	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 0:		next ptr is now 0x7fe71600b026
+Thread 0:Build instruction MFENCE		Thread 0:		next ptr is now 0x7fe71600b029
+Thread 0:Build instruction MOV Register to Memory :Inst_size=8	 Src_reg =1	 mem_reg=0	Displacement=81 	Thread 0:		next ptr is now 0x7fe71600b030
+Thread 0:Build instruction MFENCE		Thread 0:		next ptr is now 0x7fe71600b033
+Thread 0: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 0:		next ptr is now 0x7fe71600b035
+Thread 0:Build instruction LFENCE 		Thread 0:		next ptr is now 0x7fe71600b038
+Thread 0:Build instruction MFENCE		Thread 0:		next ptr is now 0x7fe71600b03b
+Thread 0: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 0:		next ptr is now 0x7fe71600b03d
+Thread 0:Build instruction LFENCE 		Thread 0:		next ptr is now 0x7fe71600b040
+Thread 0:Build instruction XADD :Inst_size=2	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 0:		next ptr is now 0x7fe71600b045
+Thread 0:Build instruction MOV Memory to Register :Inst_size=8	 mem_reg =1	 dest_reg=0	Displacement=84 	Thread 0:		next ptr is now 0x7fe71600b04c
+Thread 0:Build instruction MOV Immediate to reg:Inst_size=8	 Immediate value =492	 dest_reg=1		Thread 0:		next ptr is now 0x7fe71600b053
+Thread 0:Build instruction XADD :Inst_size=8	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 0:		next ptr is now 0x7fe71600b058
+Thread 0:Build instruction MOV Register to Memory :Inst_size=2	 Src_reg =1	 mem_reg=0	Displacement=64 	Thread 0:		next ptr is now 0x7fe71600b05c
+Thread 0:Build instruction MFENCE		Thread 0:		next ptr is now 0x7fe71600b05f
+Thread 0:Build instruction XADD :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 0:		next ptr is now 0x7fe71600b063
+Thread 0:Build instruction SFENCE 		Thread 0:		next ptr is now 0x7fe71600b066
+ Assigned child process T3780 to CPU_3
+Thread 3:Build instruction MOV Immediate to reg:Inst_size=2	 Immediate value =203	 dest_reg=1		Thread 3:		next ptr is now 0x7fe71601401f
+Thread 3:Build instruction XCHG :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 3:		next ptr is now 0x7fe716014021
+Thread 3:Build instruction SFENCE 		Thread 3:		next ptr is now 0x7fe716014024
+Thread 3:Build instruction XCHG :Inst_size=1	 scr_reg =1	 dest_reg=0	LOCK enable=0		Thread 3:		next ptr is now 0x7fe716014026
+Thread 3:Build instruction MFENCE		Thread 3:		next ptr is now 0x7fe716014029
+Thread 3:Build instruction MOV Register to Memory :Inst_size=8	 Src_reg =1	 mem_reg=0	Displacement=81 	Thread 3:		next ptr is now 0x7fe716014030
+Thread 3:Build instruction MFENCE		Thread 3:		next ptr is now 0x7fe716014033
+Thread 3: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 3:		next ptr is now 0x7fe716014035
+Thread 3:Build instruction LFENCE 		Thread 3:		next ptr is now 0x7fe716014038
+Thread 3:Build instruction MFENCE		Thread 3:		next ptr is now 0x7fe71601403b
+Thread 3: Build instruction MOV REG to reg:Inst_size=4	 src_reg=1	 dest_reg=3			Thread 3:		next ptr is now 0x7fe71601403d
+Thread 3:Build instruction LFENCE 		Thread 3:		next ptr is now 0x7fe716014040
+Thread 3:Build instruction XADD :Inst_size=2	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 3:		next ptr is now 0x7fe716014045
+Thread 3:Build instruction MOV Memory to Register :Inst_size=8	 mem_reg =1	 dest_reg=0	Displacement=84 	Thread 3:		next ptr is now 0x7fe71601404c
+Thread 3:Build instruction MOV Immediate to reg:Inst_size=8	 Immediate value =492	 dest_reg=1		Thread 3:		next ptr is now 0x7fe716014053
+Thread 3:Build instruction XADD :Inst_size=8	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 3:		next ptr is now 0x7fe716014058
+Thread 3:Build instruction MOV Register to Memory :Inst_size=2	 Src_reg =1	 mem_reg=0	Displacement=64 	Thread 3:		next ptr is now 0x7fe71601405c
+Thread 3:Build instruction MFENCE		Thread 3:		next ptr is now 0x7fe71601405f
+Thread 3:Build instruction XADD :Inst_size=4	 scr_reg =1	 dest_reg=0	LOCK enable=1		Thread 3:		next ptr is now 0x7fe716014063
+Thread 3:Build instruction SFENCE 		Thread 3:		next ptr is now 0x7fe716014066

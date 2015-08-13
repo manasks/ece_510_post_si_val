@@ -2,8 +2,6 @@
  * Description:
  *
  *
- * References: Intel 64 and IA-32 Architectures Software Developers Manual (SDM)
- *
  * GENERAL Instruction Format
  *
  * -----------------------------------------------------------------
@@ -19,14 +17,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/mman.h>
-
-#include <limits.h>    /* for PAGESIZE */
-
 /*
  * definitions we need to support these functions.
  *
  * see Table 2-2 in SDM for register/MODRM encode usage
+ *
  *
  */
 #define PREFIX_32BIT_ADDR		 0x67				// prefix to specify 32 bit address
@@ -45,7 +40,6 @@
 #define DISP_8					 8
 #define DISP_32					 32	
 #define STACK_SIZE				 2048
-#define PREFIX_LOCK  			 0xf0
 
 // register defs based on MOD RM table
 #define REG_EAX        0x0
@@ -96,17 +90,8 @@
 
 // code generation defines
 
-#define MAX_THREADS     4
-#define MAX_DEF_INSTRS  10
-#define MAX_INSTR_BYTES (3*PAGESIZE)   // allocate 3  PAGES for instruction
-#define MAX_DATA_BYTES  (10*PAGESIZE)  // allocate 10 PAGES for data
-#define MAX_COMM_BYTES  (PAGESIZE)     // allocate 1  PAGE for communications
-
-// information sharing between tasks
-#define NUM_PTRS 3
-#define CODE 0
-#define DATA 1
-#define COMM 2
+#define MAX_INSTR_BYTES 10000
+#define MAX_DATA_BYTES  (10*1024)  // allocate 10K
 
 
 
@@ -128,6 +113,8 @@
  *  returns adjusted address after encoding instruction
  *
  */
+
+
 static inline volatile char *build_mov_register_to_register(short mov_size, int src_reg, int dest_reg,int x86_64f, volatile char *tgt_addr)
 {
 	// for 16 bit mode we need to treat it special because it requires a prefix
@@ -135,6 +122,8 @@ static inline volatile char *build_mov_register_to_register(short mov_size, int 
 	if (mov_size == 2) {
 		(*tgt_addr ++) = PREFIX_16BIT;
 	}
+
+	// now lets look at each size and determine which opcode required
 
 	switch(mov_size)  {
 
@@ -170,6 +159,9 @@ static inline volatile char *build_mov_register_to_register(short mov_size, int 
         return(tgt_addr);
 }
 
+
+
+
 /*
  * Function: build_mov_immediate_to_register
  *
@@ -178,7 +170,7 @@ static inline volatile char *build_mov_register_to_register(short mov_size, int 
  * Inputs: 
  *
  *  short mov_size               :  size of the move being requested
- *  int movabs					 :  flag to indicate move 64 bit absolute value to register
+ *  int movabs					 :  flag to indicate 64 bit absolute value move to register
  *  long  immediate              :  immediate value to be moved
  *  int   dest_reg               :  destination reg of move
  *	int   x86_64f				 :  indicates to use 64bit r8-r15 registers
@@ -189,6 +181,8 @@ static inline volatile char *build_mov_register_to_register(short mov_size, int 
  *  returns adjusted address after encoding instruction
  *
  */
+
+
 static inline volatile char *build_mov_immediate_to_register(short mov_size,int movabs, long immediate, int dest_reg, int x86_64f,volatile char *tgt_addr)
 {
 	
@@ -257,8 +251,8 @@ static inline volatile char *build_mov_immediate_to_register(short mov_size,int 
  *
  *  short mov_size               :  size of the move being requested
  *  short   addr_size            :  size of memory address (32 bits or 64 bits)
- *  int   src		        	 :  Source reg of move
- *  int mem_reg					 :  register which contain the memory address
+ *  int   src		             :  Source reg of move
+ *  int mem_reg			         :  register which contain the memory address
  *  short disp_size              :  indicates the size of memory displacement (DISP_0,DISP_8 or DISP_32)
  *  long displacement 			 :  Specifies the value of memory displacement
  *  volatile char *tgt_addr      :  starting memory address of where to store instruction
@@ -465,6 +459,8 @@ static inline volatile char *build_mov_memory_to_register(short mov_size, short 
 		    }
 			break;
 		 
+		 
+		 
 	case 8: if (addr_size==64) {							
 			(*tgt_addr ++) = REX_PREFIX | REX_W ;			// specify 64 bit operand
 			(*(short *) tgt_addr) = ((base_modrm_mem) + (dest_reg << REG_SHIFT) + mem_reg) << 8 | (0x8b) ;
@@ -490,6 +486,7 @@ static inline volatile char *build_mov_memory_to_register(short mov_size, short 
 }
 
 
+
 /*
  * Function: add_headeri
  *
@@ -503,10 +500,12 @@ static inline volatile char *build_mov_memory_to_register(short mov_size, short 
  *  returns adjusted address after encoding instruction
  *
  */
+
+
 static inline volatile char *add_headeri(volatile char *tgt_addr)
 {
-	(*tgt_addr ++) = 0xc8;						// opcode for ENTER inst
-	(*(short *) tgt_addr) = STACK_SIZE; 	    // stack frame size 
+	(*tgt_addr ++) = 0xc8;				
+	(*(short *) tgt_addr) =  0x0800; 			// stack frame size 
 	tgt_addr += BYTE2_OFF;
 	tgt_addr++;
 	return(tgt_addr);
@@ -527,6 +526,8 @@ static inline volatile char *add_headeri(volatile char *tgt_addr)
  *  returns adjusted address after encoding instruction
  *
  */
+
+
 static inline volatile char *add_endi(volatile char *tgt_addr)
 {
 
@@ -607,307 +608,3 @@ static inline volatile char *build_pop_reg(int reg_index, int x86_64f, volatile 
 }
 
 
-/* Function: build_xadd
- *
- * Description:
- * This function builds the xadd instruction. 
- *
- * Inputs: 
- *
- *  short mov_size               :  size of the operands
- *  short   addr_size            :  size of memory address (32 bits or 64 bits)
- *  int  src_reg		         :  Source register
- *  int mem_reg				     :  register which contain the memory address 
- *  int x86_64f		             :  Flag to indicate the use of R8-R15 registers
- *  int lock_en		 			 :  flag to indicate the use of lock prefix
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_xadd(short mov_size, int addr_size, int src_reg,int mem_reg, int x86_64f,int lock_en, volatile char *tgt_addr)
-{
-	if (lock_en) {
-		(*tgt_addr ++) = PREFIX_LOCK;
-		}
-	if (addr_size==32) {
-		(*tgt_addr ++) = PREFIX_32BIT_ADDR;
-		}
-		
-	
-	switch( mov_size) {
-	
-	case 1: 
-			(*(short *) tgt_addr)= 0xc00f;
-			tgt_addr += BYTE2_OFF;
-			break;
-			
-	case 2 : 
-			(*tgt_addr ++) = PREFIX_16BIT;
-				
-	case 4: 
-			(*(short *) tgt_addr)= 0xc10f;
-			tgt_addr += BYTE2_OFF;
-			break;
-			
-	case 8:		
-			if (x86_64f) {
-			(*tgt_addr ++)=(REX_PREFIX | REX_W |REX_R);
-			}
-			else {
-			(*tgt_addr ++)=(REX_PREFIX | REX_W );
-			}
-			(*(short *) tgt_addr)= 0xc10f;
-			tgt_addr += BYTE2_OFF;
-			break;
-	
-	default :
-	
-			printf("incorrect mov_size passed to xadd instruction :%d\n",mov_size);
-			
-	}
-	
-	(*tgt_addr ++)= ((BASE_MODRM_MEM_DISP0) + (src_reg << REG_SHIFT) + mem_reg);
-		
-	
-	 return(tgt_addr);
-}
-
-/* Function: build_xchg
- *
- * Description:
- * This function builds the xchg instruction. 
- *
- * Inputs: 
- *
- *  short mov_size               :  size of the operands
- *  short   addr_size            :  size of memory address (32 bits or 64 bits)
- *  int  src_reg		         :  Source register
- *  int mem_reg				     :  register which contain the memory address 
- *  int x86_64f		             :  Flag to indicate the use of R8-R15 registers
- *  int lock_en		 			 :  flag to indicate the use of lock prefix
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_xchg(short mov_size, int addr_size, int src_reg,int mem_reg, int x86_64f,int lock_en, volatile char *tgt_addr)
-{
-	if (lock_en) {
-		(*tgt_addr ++) = PREFIX_LOCK;
-		}
-	if (addr_size==32) {
-		(*tgt_addr ++) = PREFIX_32BIT_ADDR;
-		}
-		
-	switch( mov_size) {
-	
-	case 1: 
-			(*(char *) tgt_addr)= 0x86;							//opcode for 8 bit register to memory exhg
-			tgt_addr += BYTE1_OFF;
-			break;
-			
-	case 2 : 
-			(*tgt_addr ++) = PREFIX_16BIT;
-				
-	case 4: 
-			(*(char *) tgt_addr)= 0x87;
-			tgt_addr += BYTE1_OFF;
-			break;
-			
-	case 8:		
-			if (x86_64f) {
-			(*tgt_addr ++)=(REX_PREFIX | REX_W |REX_R);
-			}
-			else {
-			(*tgt_addr ++)=(REX_PREFIX | REX_W );
-			}
-			(*(char *) tgt_addr)= 0x87;
-			tgt_addr += BYTE1_OFF;
-			break;
-	
-	default :
-	
-			printf("incorrect mov_size passed to xadd instruction :%d\n",mov_size);
-			
-	}
-	
-	(*tgt_addr ++)= ((BASE_MODRM_MEM_DISP0) + (src_reg << REG_SHIFT) + mem_reg);
-			
-	 return(tgt_addr);
-}
-
-
-/*
- * Function: build_pusha
- *
- * Description:
- *
- * builds pusha (all genp regs)
- *
- * Inputs: 
- *
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_pusha(volatile char *tgt_addr)
-{
-
-	(*(char *) tgt_addr) = 0x60;
-	tgt_addr += BYTE1_OFF;
-			
-        return(tgt_addr);
-}
-
-
-/*
- * Function: build_pushf
- *
- * Description:
- *
- * builds pushf (push eflags regs on stack for safe keeping)
- *
- * Inputs: 
- *
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_pushf(volatile char *tgt_addr)
-{
-
-	(*(char *) tgt_addr) = 0x9c;
-	tgt_addr += BYTE1_OFF;
-			
-        return(tgt_addr);
-}
-
-
-/*
- * Function: build_popa
- *
- * Description:
- *
- * builds popa (all genp regs from stack)
- *
- * Inputs: 
- *
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_popa(volatile char *tgt_addr)
-{
-
-	(*(char *) tgt_addr) = 0x61;
-	tgt_addr += BYTE1_OFF;
-			
-        return(tgt_addr);
-}
-
-/*
- * Function: build_popf
- *
- * Description:
- *
- * builds popf (pop all eflages from stack)
- *
- * Inputs: 
- *
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- *
- *  returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_popf(volatile char *tgt_addr)
-{
-	(*(char *) tgt_addr) = 0x9d;
-	tgt_addr += BYTE1_OFF;
-			
-        return(tgt_addr);
-}
-
-/*
- * Function: build_mfence
- *
- * Description:
- * builds MFENCE instruction
- *
- * Inputs: 
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- * returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_mfence(volatile char *tgt_addr)
-{
-	(*(short *) tgt_addr) = 0xae0f;
-	tgt_addr += BYTE2_OFF;
-	(*tgt_addr++)=0xf0;
-    return(tgt_addr);
-}
-
-
-
-/*
- * Function: build_sfence
- *
- * Description:
- * builds SFENCE instruction
- *
- * Inputs: 
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- * returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_sfence(volatile char *tgt_addr)
-{
-	(*(short *) tgt_addr) = 0xae0f;
-	tgt_addr += BYTE2_OFF;
-	(*tgt_addr++)=0xf8;
-    return(tgt_addr);
-}
-
-
-
-/*
- * Function: build_lfence
- *
- * Description:
- * builds LFENCE instruction
- *
- * Inputs: 
- *  volatile char *tgt_addr      :  starting memory address of where to store instruction
- *
- * Output: 
- * returns adjusted address after encoding instruction
- *
- */
-static inline volatile char *build_lfence(volatile char *tgt_addr)
-{
-	(*(short *) tgt_addr) = 0xae0f;
-	tgt_addr += BYTE2_OFF;
-	(*tgt_addr++)=0xe8;
-    return(tgt_addr);
-}
-
-
-	
-	

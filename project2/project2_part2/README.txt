@@ -110,7 +110,8 @@
 # 
 #  Hint 2:
 #         what about architecture callee saved registers........
-#         hmm, should be saving and restoring registers before we start execution our own#         code?  Ever hear of ABI (Application Binary Interface)... Also good practice to
+#         hmm, should be saving and restoring registers before we start execution our own
+#         code?  Ever hear of ABI (Application Binary Interface)... Also good practice to
 #         make sure you don't destroy any needed context for the return path...
 #
 #  Hint 3:  
